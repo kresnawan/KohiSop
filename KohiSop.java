@@ -32,13 +32,15 @@ public class KohiSop {
             } else if (command.toLowerCase().equals("cart")) {
                 Handler.handleDisplayCart(app);
             } else if (command.toLowerCase().equals("add")) {
-                Handler.handleDisplayCart(app);
+                Handler.handleAddToCart(app);
             } else if (command.toLowerCase().equals("clear")) {
                 Handler.handleClearConsole();
             } else {
                 System.out.printf("Perintah '%s' tidak ditemukan :(\n", command);
                 System.out.println("Ketik 'help' untuk bantuan ^^!");
             }
+
+            app.input.nextLine();
 
         }
 
