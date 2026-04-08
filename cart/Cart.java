@@ -101,20 +101,20 @@ public class Cart implements Displayable {
         } catch (Exception e) {
             throw e;
         }
-        
 
         if (currentAmount <= 0) {
-            throw new Exception(
-                    String.format("Item tidak ditemukan", item.menu.nama));
+            throw new Exception(String.format("Item tidak ditemukan", item.menu.nama));
         }
 
         if (currentAmount - amount < 0) {
-            throw new Exception(String
-                    .format("Item gagal dikurangi, karena jumlah di keranjang tidak sebanyak permintaan"));
+            throw new Exception(String.format("Item gagal dikurangi, karena jumlah di keranjang tidak sebanyak permintaan"));
         }
 
         
         chosen.amount -= amount;
+        if (chosen.amount == 0) {
+            this.items.remove(chosen);
+        }
     }
 
     public CartItem getItem(String kode) throws Exception {

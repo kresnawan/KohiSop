@@ -23,6 +23,7 @@ public class Handler {
 
     public static void handleAddToCart(KohiSop app) {
         String kode = app.input.next();
+        app.input.nextLine();
         MenuItem chosen = Menu.getMenu(kode);
         if (chosen == null) {
             System.out.printf("Menu dengan kode '%s' tidak ditemukan :(\n", kode);
@@ -33,7 +34,6 @@ public class Handler {
                     System.out.print("[Keranjang] ");
                     System.out.print("Masukkan jumlah : ");
 
-                    app.input.nextLine();
                     String jumlah = app.input.nextLine();
                     int jumlahAsInt;
 
@@ -59,7 +59,6 @@ public class Handler {
                     break;
                 } catch (Exception e) {
                     System.out.println("\nOh no, input anda tidak valid!\n");
-                    app.input.nextLine();
                     continue;
                 }
             }
@@ -68,6 +67,7 @@ public class Handler {
 
     public static void handleRemoveFromCart(KohiSop app) {
         String kode = app.input.next();
+        app.input.nextLine();
         CartItem chosen;
 
         try {
@@ -79,7 +79,6 @@ public class Handler {
                     System.out.print("[Keranjang] ");
                     System.out.print("Masukkan jumlah : ");
 
-                    app.input.nextLine();
                     String jumlah = app.input.nextLine();
                     int jumlahAsInt;
 
@@ -105,7 +104,6 @@ public class Handler {
                     break;
                 } catch (Exception e) {
                     System.out.println("\nInput anda tidak valid\n");
-                    app.input.nextLine();
                     continue;
                 }
             }
@@ -126,8 +124,11 @@ public class Handler {
             String str = String.format("%-72s", "");
             System.out.printf(" %-68s \n", str.replace(" ", "-"));
 
-            System.out.printf("|  %-68s  | \n", "");
+            // System.out.printf("|  %-68s  | \n", "");
             System.out.printf("|  %-68s  | \n", "KohiSop");
+
+            System.out.printf(" %-68s \n", str.replace(" ", "-"));
+
             System.out.printf("|  %-48s %19s  | \n", "Pesanan Anda", "IDR");
             System.out.printf("|  %-68s  | \n", "");
             System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "Kode", "Nama", "Harga", "Jumlah", "Total");
@@ -150,6 +151,11 @@ public class Handler {
             System.out.printf("|  %-68s  | \n", "");
             System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "", "GRAND TOTAL", "", "", 99);
             System.out.printf("|  %-68s  | \n", "");
+
+            System.out.printf(" %-68s \n", str.replace(" ", "-"));
+
+            // System.out.printf("|  %-68s  | \n", "");
+            System.out.printf("|  %-68s  | \n", "Terima kasih dan silakan datang kembali ^^!");
 
             System.out.printf(" %-68s \n", str.replace(" ", "-"));
         }
