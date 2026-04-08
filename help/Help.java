@@ -7,6 +7,7 @@ public class Help implements Displayable {
         new HelpItem("cart", "Menampilkan keranjang"),
         new HelpItem("menu", "Menampilkan menu yang tersedia"),
         new HelpItem("clear", "Membersihkan konsol (hanya pemanis)"),
+        new HelpItem("checkout", "Membuat pesanan"),
         new HelpItem("add <kode>", "Menambahkan menu kedalam keranjang"),
     };
 

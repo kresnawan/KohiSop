@@ -2,7 +2,7 @@ package cart;
 
 import menu.MenuItem;
 
-class CartItem {
+public class CartItem {
     public MenuItem menu;
     public int amount;
 

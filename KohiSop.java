@@ -35,12 +35,12 @@ public class KohiSop {
                 Handler.handleAddToCart(app);
             } else if (command.toLowerCase().equals("clear")) {
                 Handler.handleClearConsole();
+            } else if (command.toLowerCase().equals("checkout")) {
+                Handler.handleCheckout(app);
             } else {
                 System.out.printf("Perintah '%s' tidak ditemukan :(\n", command);
                 System.out.println("Ketik 'help' untuk bantuan ^^!");
             }
-
-            app.input.nextLine();
 
         }
 

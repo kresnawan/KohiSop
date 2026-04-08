@@ -1,4 +1,5 @@
 import menu.MenuItem;
+import cart.CartItem;
 
 public class Handler {
     public static void handleExit(KohiSop app) {
@@ -30,13 +31,24 @@ public class Handler {
                 try {
                     System.out.print("[Pemesanan] ");
                     System.out.print("Masukkan jumlah : ");
-                    String jumlah = app.input.next();
+
+                    app.input.nextLine();
+                    String jumlah = app.input.nextLine();
+                    int jumlahAsInt;
+
                     if (jumlah.equals("S") || jumlah.equals("0")) {
                         System.out.println("Pemesanan dibatalkan");
                         break;
-                    }
+                    } else if (jumlah.toLowerCase().equals("cc")) {
+                        System.out.println("Pemesanan dibatalkan");
+                        handleExit(app);
+                        break;
+                    } else if (jumlah.equals("")) {
+                        jumlahAsInt = 1;
+                    } else {
+                        jumlahAsInt = Integer.parseInt(jumlah);
+                    } 
 
-                    int jumlahAsInt = Integer.parseInt(jumlah);
                     try {
                         app.cart.add(chosen, jumlahAsInt);
                         System.out.println("Berhasil ditambahkan");
@@ -56,5 +68,41 @@ public class Handler {
     public static void handleClearConsole() {
         for (int j = 0; j < 100; j++)
         System.out.println();
+    }
+
+    public static void handleCheckout(KohiSop app) {
+        if (app.cart.items.isEmpty()) {
+            System.out.println("Keranjang kamu masih kosong :_|");
+        } else {
+            String str = String.format("%-72s", "");
+            System.out.printf(" %-68s \n", str.replace(" ", "-"));
+
+            System.out.printf("|  %-68s  | \n", "");
+            System.out.printf("|  %-68s  | \n", "KohiSop");
+            System.out.printf("|  %-48s %19s  | \n", "Pesanan Anda", "IDR");
+            System.out.printf("|  %-68s  | \n", "");
+            System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "Kode", "Nama", "Harga", "Jumlah", "Total");
+            System.out.printf("|  %-68s  | \n", "");
+
+            // Loop
+            for (CartItem c : app.cart.items) {
+                System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", c.menu.kode, c.menu.nama, c.menu.harga, c.amount, c.menu.harga * c.amount);
+                System.out.printf("|  %-4s  %-10s %-24s  %7s  %7s  %7s  | \n", "", "\\_ Pajak: ", "25%", "1", "", "");
+                System.out.printf("|  %-68s  | \n", "");
+            }
+            
+            System.out.printf("|  %-68s  | \n", "");
+
+            System.out.printf("|  %-4s  %-53s  %7s  | \n", "", "Total (Tanpa Pajak, Diskon, Biaya Admin)", 100);
+            System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "", "Diskon", "", "", 99);
+            System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "", "Biaya Admin", "", "", 99);
+            System.out.printf("|  %-4s  %-53s  %7s  | \n", "", "Total Pajak", 100);
+            
+            System.out.printf("|  %-68s  | \n", "");
+            System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "", "GRAND TOTAL", "", "", 99);
+            System.out.printf("|  %-68s  | \n", "");
+
+            System.out.printf(" %-68s \n", str.replace(" ", "-"));
+        }
     }
 }
