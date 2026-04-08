@@ -1,3 +1,4 @@
+import menu.Menu;
 import menu.MenuItem;
 import cart.CartItem;
 
@@ -22,14 +23,14 @@ public class Handler {
 
     public static void handleAddToCart(KohiSop app) {
         String kode = app.input.next();
-        MenuItem chosen = app.menu.getMenu(kode);
+        MenuItem chosen = Menu.getMenu(kode);
         if (chosen == null) {
             System.out.printf("Menu dengan kode '%s' tidak ditemukan :(\n", kode);
         } else {
-            System.out.printf("[Pemesanan] Anda akan memesan %s seharga Rp %.0f\n", chosen.nama, chosen.harga);
+            System.out.printf("[Keranjang] Anda akan menambahkan %s seharga Rp %.0f kedalam keranjang\n", chosen.nama, chosen.harga);
             while (true) {
                 try {
-                    System.out.print("[Pemesanan] ");
+                    System.out.print("[Keranjang] ");
                     System.out.print("Masukkan jumlah : ");
 
                     app.input.nextLine();
@@ -51,9 +52,9 @@ public class Handler {
 
                     try {
                         app.cart.add(chosen, jumlahAsInt);
-                        System.out.println("Berhasil ditambahkan");
+                        System.out.printf("[Keranjang] Berhasil menambahkan %s sebanyak %d porsi\n", chosen.nama, jumlahAsInt);
                     } catch (Exception e) {
-                        System.out.println("[Pemesanan] " + e.getMessage());
+                        System.out.println("[Keranjang] " + e.getMessage());
                     }
                     break;
                 } catch (Exception e) {
@@ -62,6 +63,54 @@ public class Handler {
                     continue;
                 }
             }
+        }
+    }
+
+    public static void handleRemoveFromCart(KohiSop app) {
+        String kode = app.input.next();
+        CartItem chosen;
+
+        try {
+            chosen = app.cart.getItem(kode);
+
+            System.out.printf("[Keranjang] Anda akan mengurangi %s dari keranjang\n", chosen.menu.nama);
+            while (true) {
+                try {
+                    System.out.print("[Keranjang] ");
+                    System.out.print("Masukkan jumlah : ");
+
+                    app.input.nextLine();
+                    String jumlah = app.input.nextLine();
+                    int jumlahAsInt;
+
+                    if (jumlah.equals("S") || jumlah.equals("0")) {
+                        System.out.println("Pemesanan dibatalkan");
+                        break;
+                    } else if (jumlah.toLowerCase().equals("cc")) {
+                        System.out.println("Pemesanan dibatalkan");
+                        handleExit(app);
+                        break;
+                    } else if (jumlah.equals("")) {
+                        jumlahAsInt = 1;
+                    } else {
+                        jumlahAsInt = Integer.parseInt(jumlah);
+                    } 
+
+                    try {
+                        app.cart.remove(chosen, jumlahAsInt);
+                        System.out.printf("[Keranjang] Berhasil mengurangi %s sebanyak %d porsi\n", chosen.menu.nama, jumlahAsInt);
+                    } catch (Exception e) {
+                        System.out.println("[Keranjang] " + e.getMessage());
+                    }
+                    break;
+                } catch (Exception e) {
+                    System.out.println("\nInput anda tidak valid\n");
+                    app.input.nextLine();
+                    continue;
+                }
+            }
+        } catch (Exception e) {
+            System.out.printf("[Keranjang] %s\n", e.getMessage());
         }
     }
 

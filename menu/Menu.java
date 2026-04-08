@@ -2,7 +2,7 @@ package menu;
 import interfaces.Displayable;
 
 public class Menu implements Displayable {
-    MenuItem[] menu = {
+    public static MenuItem[] menu = {
             new MenuItem("A1", "Caffe Latte", 46, MenuType.Minuman),
             new MenuItem("A2", "Cappuccino", 46, MenuType.Minuman),
             new MenuItem("E1", "Caffe Americano", 37, MenuType.Minuman),
@@ -31,7 +31,7 @@ public class Menu implements Displayable {
         System.out.printf("-------------------------------------------------\n");
         System.out.printf("%-6s %-35s %s\n", "Kode", "Minuman", "Harga");
         System.out.printf("-------------------------------------------------\n");
-        for (MenuItem menu : this.menu) {
+        for (MenuItem menu : Menu.menu) {
             if (menu.tipe == MenuType.Minuman) {
                 System.out.printf("%-6s %-35s %.0f\n", menu.kode, menu.nama, menu.harga);
             }
@@ -41,15 +41,15 @@ public class Menu implements Displayable {
         System.out.printf("%-6s %-35s %s\n", "Kode", "Makanan", "Harga");
         System.out.printf("-------------------------------------------------\n");
 
-        for (MenuItem menu : this.menu) {
+        for (MenuItem menu : Menu.menu) {
             if (menu.tipe == MenuType.Makanan) {
                 System.out.printf("%-6s %-35s %.0f\n", menu.kode, menu.nama, menu.harga);
             }
         }
     }
 
-    public MenuItem getMenu(String kode) {
-        for (MenuItem i : this.menu) {
+    public static MenuItem getMenu(String kode) {
+        for (MenuItem i : Menu.menu) {
             if (i.kode.equals(kode)) {
                 return i;
             }

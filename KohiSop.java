@@ -33,6 +33,8 @@ public class KohiSop {
                 Handler.handleDisplayCart(app);
             } else if (command.toLowerCase().equals("add")) {
                 Handler.handleAddToCart(app);
+            } else if (command.toLowerCase().equals("remove")) {
+                Handler.handleRemoveFromCart(app);
             } else if (command.toLowerCase().equals("clear")) {
                 Handler.handleClearConsole();
             } else if (command.toLowerCase().equals("checkout")) {
