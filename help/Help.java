@@ -9,6 +9,7 @@ public class Help implements Displayable {
         new HelpItem("clear", "Membersihkan konsol (hanya pemanis)"),
         new HelpItem("checkout", "Membuat pesanan"),
         new HelpItem("add <kode>", "Menambahkan menu kedalam keranjang"),
+        new HelpItem("remove <kode>", "Mengurangi menu dari keranjang"),
     };
 
     @Override

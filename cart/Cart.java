@@ -75,12 +75,12 @@ public class Cart implements Displayable {
         } else {
             if (currentAmount >= 3) {
                 throw new Exception(String
-                        .format("Minuman dengan kode %s gagal ditambahkan, karena telah menyentuh batas", item.kode));
+                        .format("Minuman dengan kode %s gagal ditambahkan, karena jumlah telah menyentuh batas", item.kode));
             }
 
             if (currentAmount + amount > 3) {
                 throw new Exception(String
-                        .format("Minuman dengan kode %s gagal ditambahkan, karena jumlah melebihi batas", item.kode));
+                        .format("Minuman dengan kode %s gagal ditambahkan, karena permintaan melebihi batas", item.kode));
             }
 
             if (currentAmount == 0) {

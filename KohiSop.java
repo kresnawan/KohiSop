@@ -10,6 +10,15 @@ public class KohiSop {
     public Help help = new Help();
     public Scanner input = new Scanner(System.in);
 
+    static String BOLD = "\033[1m";
+
+    static String CYAN = "\033[36m";
+    static String GREEN = "\033[32m";
+    static String RED = "\033[31m";
+
+    static String RESET = "\033[0m";
+    
+
     public static void main(String[] args) {
         KohiSop app = new KohiSop();
 
@@ -19,7 +28,9 @@ public class KohiSop {
         System.out.println("\nKetik 'help' untuk bantuan ^^!");
 
         while (true) {
-            System.out.print("\n[KohiSop] > ");
+            
+
+            System.out.print(BOLD + CYAN + "\n[KohiSop]" + RESET + "> ");
             String command = app.input.next();
 
             if (command.toLowerCase().equals("cc")) {

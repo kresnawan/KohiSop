@@ -28,10 +28,9 @@ public class Handler {
         if (chosen == null) {
             System.out.printf("Menu dengan kode '%s' tidak ditemukan :(\n", kode);
         } else {
-            System.out.printf("[Keranjang] Anda akan menambahkan %s seharga Rp %.0f kedalam keranjang\n", chosen.nama, chosen.harga);
+            System.out.printf("Anda akan menambahkan %s seharga Rp %.0f kedalam keranjang\n", chosen.nama, chosen.harga);
             while (true) {
                 try {
-                    System.out.print("[Keranjang] ");
                     System.out.print("Masukkan jumlah : ");
 
                     String jumlah = app.input.nextLine();
@@ -52,9 +51,9 @@ public class Handler {
 
                     try {
                         app.cart.add(chosen, jumlahAsInt);
-                        System.out.printf("[Keranjang] Berhasil menambahkan %s sebanyak %d porsi\n", chosen.nama, jumlahAsInt);
+                        System.out.printf(KohiSop.BOLD + KohiSop.GREEN + "Berhasil menambahkan %s sebanyak %d porsi\n" + KohiSop.RESET, chosen.nama, jumlahAsInt);
                     } catch (Exception e) {
-                        System.out.println("[Keranjang] " + e.getMessage());
+                        System.out.println(KohiSop.BOLD + KohiSop.RED + e.getMessage() + KohiSop.RESET);
                     }
                     break;
                 } catch (Exception e) {
@@ -73,10 +72,9 @@ public class Handler {
         try {
             chosen = app.cart.getItem(kode);
 
-            System.out.printf("[Keranjang] Anda akan mengurangi %s dari keranjang\n", chosen.menu.nama);
+            System.out.printf("Anda akan mengurangi %s dari keranjang\n", chosen.menu.nama);
             while (true) {
                 try {
-                    System.out.print("[Keranjang] ");
                     System.out.print("Masukkan jumlah : ");
 
                     String jumlah = app.input.nextLine();
@@ -97,9 +95,9 @@ public class Handler {
 
                     try {
                         app.cart.remove(chosen, jumlahAsInt);
-                        System.out.printf("[Keranjang] Berhasil mengurangi %s sebanyak %d porsi\n", chosen.menu.nama, jumlahAsInt);
+                        System.out.printf(KohiSop.BOLD + KohiSop.GREEN + "Berhasil mengurangi %s sebanyak %d porsi\n" + KohiSop.RESET, chosen.menu.nama, jumlahAsInt);
                     } catch (Exception e) {
-                        System.out.println("[Keranjang] " + e.getMessage());
+                        System.out.println(KohiSop.BOLD + KohiSop.RED + e.getMessage() + KohiSop.RESET);
                     }
                     break;
                 } catch (Exception e) {
@@ -108,7 +106,7 @@ public class Handler {
                 }
             }
         } catch (Exception e) {
-            System.out.printf("[Keranjang] %s\n", e.getMessage());
+            System.out.printf("%s\n", e.getMessage());
         }
     }
 
