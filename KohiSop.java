@@ -21,14 +21,13 @@ public class KohiSop {
         while (true) {
             System.out.print("\n[KohiSop] > ");
             String command = app.input.next();
-            System.out.println();
 
             if (command.toLowerCase().equals("cc")) {
                 Handler.handleExit(app);
             } else if (command.toLowerCase().equals("help")) {
                 Handler.handleHelp(app);
             } else if (command.toLowerCase().equals("menu")) {
-                Handler.handleHelp(app);
+                Handler.handleMenu(app);
             } else if (command.toLowerCase().equals("cart")) {
                 Handler.handleDisplayCart(app);
             } else if (command.toLowerCase().equals("add")) {
