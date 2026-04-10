@@ -1,5 +1,9 @@
 import menu.Menu;
 import menu.MenuItem;
+import menu.MenuType;
+import tax.Pajak;
+import tax.PajakMakanan;
+import tax.PajakMinuman;
 import cart.CartItem;
 
 public class Handler {
@@ -28,7 +32,8 @@ public class Handler {
         if (chosen == null) {
             System.out.printf("Menu dengan kode '%s' tidak ditemukan :(\n", kode);
         } else {
-            System.out.printf("Anda akan menambahkan %s seharga Rp %.0f kedalam keranjang\n", chosen.nama, chosen.harga);
+            System.out.printf("Anda akan menambahkan %s seharga Rp %.0f kedalam keranjang\n", chosen.nama,
+                    chosen.harga);
             while (true) {
                 try {
                     System.out.print("Masukkan jumlah : ");
@@ -47,11 +52,12 @@ public class Handler {
                         jumlahAsInt = 1;
                     } else {
                         jumlahAsInt = Integer.parseInt(jumlah);
-                    } 
+                    }
 
                     try {
                         app.cart.add(chosen, jumlahAsInt);
-                        System.out.printf(KohiSop.BOLD + KohiSop.GREEN + "Berhasil menambahkan %s sebanyak %d porsi\n" + KohiSop.RESET, chosen.nama, jumlahAsInt);
+                        System.out.printf(KohiSop.BOLD + KohiSop.GREEN + "Berhasil menambahkan %s sebanyak %d porsi\n"
+                                + KohiSop.RESET, chosen.nama, jumlahAsInt);
                     } catch (Exception e) {
                         System.out.println(KohiSop.BOLD + KohiSop.RED + e.getMessage() + KohiSop.RESET);
                     }
@@ -91,11 +97,12 @@ public class Handler {
                         jumlahAsInt = 1;
                     } else {
                         jumlahAsInt = Integer.parseInt(jumlah);
-                    } 
+                    }
 
                     try {
                         app.cart.remove(chosen, jumlahAsInt);
-                        System.out.printf(KohiSop.BOLD + KohiSop.GREEN + "Berhasil mengurangi %s sebanyak %d porsi\n" + KohiSop.RESET, chosen.menu.nama, jumlahAsInt);
+                        System.out.printf(KohiSop.BOLD + KohiSop.GREEN + "Berhasil mengurangi %s sebanyak %d porsi\n"
+                                + KohiSop.RESET, chosen.menu.nama, jumlahAsInt);
                     } catch (Exception e) {
                         System.out.println(KohiSop.BOLD + KohiSop.RED + e.getMessage() + KohiSop.RESET);
                     }
@@ -112,7 +119,7 @@ public class Handler {
 
     public static void handleClearConsole() {
         for (int j = 0; j < 100; j++)
-        System.out.println();
+            System.out.println();
     }
 
     public static void handleCheckout(KohiSop app) {
@@ -122,7 +129,7 @@ public class Handler {
             String str = String.format("%-72s", "");
             System.out.printf(" %-68s \n", str.replace(" ", "-"));
 
-            // System.out.printf("|  %-68s  | \n", "");
+            // System.out.printf("| %-68s | \n", "");
             System.out.printf("|  %-68s  | \n", "KohiSop");
 
             System.out.printf(" %-68s \n", str.replace(" ", "-"));
@@ -133,26 +140,48 @@ public class Handler {
             System.out.printf("|  %-68s  | \n", "");
 
             // Loop
+            double totalHarga = 0;
+            double totalPajak = 0;
+
+            // Loop BARU
             for (CartItem c : app.cart.items) {
-                System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", c.menu.kode, c.menu.nama, c.menu.harga, c.amount, c.menu.harga * c.amount);
-                System.out.printf("|  %-4s  %-10s %-24s  %7s  %7s  %7s  | \n", "", "\\_ Pajak: ", "25%", "1", "", "");
+
+                double subtotal = c.menu.harga * c.amount;
+                totalHarga += subtotal;
+
+                Pajak pajak;
+
+                if (c.menu.tipe == MenuType.Minuman) {
+                    pajak = new PajakMinuman();
+                } else {
+                    pajak = new PajakMakanan();
+                }
+
+                double pajakItem = pajak.hitung(c.menu, c.amount);
+                totalPajak += pajakItem;
+
+                System.out.printf("|  %-4s  %-35s  %7.0f  %7d  %7.0f  | \n",
+                        c.menu.kode, c.menu.nama, c.menu.harga, c.amount, subtotal);
+
+                System.out.printf("|  %-4s  %-35s  %7s  %7s  %7.0f  | \n",
+                        "", "Pajak", "", "", pajakItem);
+
                 System.out.printf("|  %-68s  | \n", "");
             }
-            
+
             System.out.printf("|  %-68s  | \n", "");
 
-            System.out.printf("|  %-4s  %-53s  %7s  | \n", "", "Total (Tanpa Pajak, Diskon, Biaya Admin)", 100);
-            System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "", "Diskon", "", "", 99);
-            System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "", "Biaya Admin", "", "", 99);
-            System.out.printf("|  %-4s  %-53s  %7s  | \n", "", "Total Pajak", 100);
-            
+            System.out.printf("|  %-4s  %-53s  %7.0f  | \n", "", "Total (Tanpa Pajak)", totalHarga);
+            System.out.printf("|  %-4s  %-53s  %7.0f  | \n", "", "Total Pajak", totalPajak);
+
             System.out.printf("|  %-68s  | \n", "");
-            System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "", "GRAND TOTAL", "", "", 99);
+
+            System.out.printf("|  %-4s  %-53s  %7.0f  | \n", "", "GRAND TOTAL", totalHarga + totalPajak);
             System.out.printf("|  %-68s  | \n", "");
 
             System.out.printf(" %-68s \n", str.replace(" ", "-"));
 
-            // System.out.printf("|  %-68s  | \n", "");
+            // System.out.printf("| %-68s | \n", "");
             System.out.printf("|  %-68s  | \n", "Terima kasih dan silakan datang kembali ^^!");
 
             System.out.printf(" %-68s \n", str.replace(" ", "-"));
