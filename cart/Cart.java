@@ -35,7 +35,22 @@ public class Cart implements Displayable {
         }
     }
 
-    private int getCurrentAmount(String kode) {
+    public CartItem getItem(String kode) throws Exception {
+        MenuItem item = Menu.getMenu(kode);
+        if (item == null) {
+            throw new Exception("Menu tidak ditemukan");
+        }
+
+        for (CartItem c : this.items) {
+            if (c.menu.kode.equals(kode)) {
+                return c;
+            }
+        }
+
+        throw new Exception("Item tidak ditemukan di keranjang");
+    }
+
+    private int getItemAmount(String kode) {
         for (CartItem i : this.items) {
             if (i.menu.kode.equals(kode)) {
                 return i.amount;
@@ -45,16 +60,8 @@ public class Cart implements Displayable {
         return 0;
     }
 
-    private void addAmount(MenuItem item, int amount) {
-        for (CartItem i : this.items) {
-            if (i.menu.equals(item)) {
-                i.amount += amount;
-            }
-        }
-    }
-
-    public void add(MenuItem item, int amount) throws Exception {
-        int currentAmount = getCurrentAmount(item.kode);
+    public void addItemAmount(MenuItem item, int amount) throws Exception {
+        int currentAmount = getItemAmount(item.kode);
         if (item.tipe == MenuType.Makanan) {
             if (currentAmount >= 2) {
                 throw new Exception(String
@@ -70,34 +77,44 @@ public class Cart implements Displayable {
                 CartItem new_item = new CartItem(item, amount);
                 this.items.add(new_item);
             } else {
-                addAmount(item, amount);
+                for (CartItem i : this.items) {
+                    if (i.menu.equals(item)) {
+                        i.amount += amount;
+                    }
+                }
             }
         } else {
             if (currentAmount >= 3) {
                 throw new Exception(String
-                        .format("Minuman dengan kode %s gagal ditambahkan, karena jumlah telah menyentuh batas", item.kode));
+                        .format("Minuman dengan kode %s gagal ditambahkan, karena jumlah telah menyentuh batas",
+                                item.kode));
             }
 
             if (currentAmount + amount > 3) {
                 throw new Exception(String
-                        .format("Minuman dengan kode %s gagal ditambahkan, karena permintaan melebihi batas", item.kode));
+                        .format("Minuman dengan kode %s gagal ditambahkan, karena permintaan melebihi batas",
+                                item.kode));
             }
 
             if (currentAmount == 0) {
                 CartItem new_item = new CartItem(item, amount);
                 this.items.add(new_item);
             } else {
-                addAmount(item, amount);
+                for (CartItem i : this.items) {
+                    if (i.menu.equals(item)) {
+                        i.amount += amount;
+                    }
+                }
             }
         }
     }
 
-    public void remove(CartItem item, int amount) throws Exception {
-        int currentAmount = getCurrentAmount(item.menu.kode);
+    public void removeItemAmount(CartItem item, int amount) throws Exception {
+        int currentAmount = getItemAmount(item.menu.kode);
         CartItem chosen;
 
         try {
-             chosen = this.getItem(item.menu.kode);
+            chosen = this.getItem(item.menu.kode);
         } catch (Exception e) {
             throw e;
         }
@@ -107,28 +124,14 @@ public class Cart implements Displayable {
         }
 
         if (currentAmount - amount < 0) {
-            throw new Exception(String.format("Item gagal dikurangi, karena jumlah di keranjang tidak sebanyak permintaan"));
+            throw new Exception(
+                    String.format("Item gagal dikurangi, karena jumlah di keranjang tidak sebanyak permintaan"));
         }
 
-        
         chosen.amount -= amount;
         if (chosen.amount == 0) {
             this.items.remove(chosen);
         }
     }
 
-    public CartItem getItem(String kode) throws Exception {
-        MenuItem item = Menu.getMenu(kode);
-        if (item == null) {
-            throw new Exception("Menu tidak ditemukan");
-        }
-
-        for (CartItem c : this.items) {
-            if (c.menu.kode.equals(kode)) {
-                return c;
-            }
-        }
-
-        throw new Exception("Item tidak ditemukan di keranjang");
-    }
 }

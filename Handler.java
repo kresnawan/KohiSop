@@ -5,6 +5,7 @@ import tax.Pajak;
 import tax.PajakMakanan;
 import tax.PajakMinuman;
 import cart.CartItem;
+import colors.Colors;
 
 public class Handler {
     public static void handleExit(KohiSop app) {
@@ -55,11 +56,11 @@ public class Handler {
                     }
 
                     try {
-                        app.cart.add(chosen, jumlahAsInt);
-                        System.out.printf(KohiSop.BOLD + KohiSop.GREEN + "Berhasil menambahkan %s sebanyak %d porsi\n"
-                                + KohiSop.RESET, chosen.nama, jumlahAsInt);
+                        app.cart.addItemAmount(chosen, jumlahAsInt);
+                        System.out.printf(Colors.BOLD + Colors.GREEN + "Berhasil menambahkan %s sebanyak %d porsi\n"
+                                + Colors.RESET, chosen.nama, jumlahAsInt);
                     } catch (Exception e) {
-                        System.out.println(KohiSop.BOLD + KohiSop.RED + e.getMessage() + KohiSop.RESET);
+                        System.out.println(Colors.BOLD + Colors.RED + e.getMessage() + Colors.RESET);
                     }
                     break;
                 } catch (Exception e) {
@@ -100,11 +101,11 @@ public class Handler {
                     }
 
                     try {
-                        app.cart.remove(chosen, jumlahAsInt);
-                        System.out.printf(KohiSop.BOLD + KohiSop.GREEN + "Berhasil mengurangi %s sebanyak %d porsi\n"
-                                + KohiSop.RESET, chosen.menu.nama, jumlahAsInt);
+                        app.cart.removeItemAmount(chosen, jumlahAsInt);
+                        System.out.printf(Colors.BOLD + Colors.GREEN + "Berhasil mengurangi %s sebanyak %d porsi\n"
+                                + Colors.RESET, chosen.menu.nama, jumlahAsInt);
                     } catch (Exception e) {
-                        System.out.println(KohiSop.BOLD + KohiSop.RED + e.getMessage() + KohiSop.RESET);
+                        System.out.println(Colors.BOLD + Colors.RED + e.getMessage() + Colors.RESET);
                     }
                     break;
                 } catch (Exception e) {

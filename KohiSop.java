@@ -1,6 +1,7 @@
 import java.util.Scanner;
 
 import cart.Cart;
+import colors.Colors;
 import help.Help;
 import menu.Menu;
 
@@ -9,15 +10,6 @@ public class KohiSop {
     public Cart cart = new Cart();
     public Help help = new Help();
     public Scanner input = new Scanner(System.in);
-
-    static String BOLD = "\033[1m";
-
-    static String CYAN = "\033[36m";
-    static String GREEN = "\033[32m";
-    static String RED = "\033[31m";
-
-    static String RESET = "\033[0m";
-    
 
     public static void main(String[] args) {
         KohiSop app = new KohiSop();
@@ -30,7 +22,7 @@ public class KohiSop {
         while (true) {
             
 
-            System.out.print(BOLD + CYAN + "\n[KohiSop]" + RESET + "> ");
+            System.out.print(Colors.BOLD + Colors.CYAN + "\n[KohiSop]" + Colors.RESET + "> ");
             String command = app.input.next();
 
             if (command.toLowerCase().equals("cc")) {
