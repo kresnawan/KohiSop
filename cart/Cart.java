@@ -62,51 +62,34 @@ public class Cart implements Displayable {
 
     public void addItemAmount(MenuItem item, int amount) throws Exception {
         int currentAmount = getItemAmount(item.kode);
+        int limit;
         if (item.tipe == MenuType.Makanan) {
-            if (currentAmount >= 2) {
-                throw new Exception(String
-                        .format("Makanan dengan kode %s gagal ditambahkan, karena telah menyentuh batas", item.kode));
-            }
-
-            if (currentAmount + amount > 2) {
-                throw new Exception(String
-                        .format("Makanan dengan kode %s gagal ditambahkan, karena jumlah melebihi batas", item.kode));
-            }
-
-            if (currentAmount == 0) {
-                CartItem new_item = new CartItem(item, amount);
-                this.items.add(new_item);
-            } else {
-                for (CartItem i : this.items) {
-                    if (i.menu.equals(item)) {
-                        i.amount += amount;
-                    }
-                }
-            }
+            limit = 2;
         } else {
-            if (currentAmount >= 3) {
-                throw new Exception(String
-                        .format("Minuman dengan kode %s gagal ditambahkan, karena jumlah telah menyentuh batas",
-                                item.kode));
-            }
+            limit = 3;
+        }
+        
+        if (currentAmount >= limit) {
+            throw new Exception(String
+                    .format("Makanan dengan kode %s gagal ditambahkan, karena telah menyentuh batas", item.kode));
+        }
 
-            if (currentAmount + amount > 3) {
-                throw new Exception(String
-                        .format("Minuman dengan kode %s gagal ditambahkan, karena permintaan melebihi batas",
-                                item.kode));
-            }
+        if (currentAmount + amount > limit) {
+            throw new Exception(String
+                    .format("Makanan dengan kode %s gagal ditambahkan, karena jumlah melebihi batas", item.kode));
+        }
 
-            if (currentAmount == 0) {
-                CartItem new_item = new CartItem(item, amount);
-                this.items.add(new_item);
-            } else {
-                for (CartItem i : this.items) {
-                    if (i.menu.equals(item)) {
-                        i.amount += amount;
-                    }
+        if (currentAmount == 0) {
+            CartItem new_item = new CartItem(item, amount);
+            this.items.add(new_item);
+        } else {
+            for (CartItem i : this.items) {
+                if (i.menu.equals(item)) {
+                    i.amount += amount;
                 }
             }
         }
+
     }
 
     public void removeItemAmount(CartItem item, int amount) throws Exception {
