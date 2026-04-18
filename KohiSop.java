@@ -10,6 +10,7 @@ public class KohiSop {
     public Cart cart = new Cart();
     public Help help = new Help();
     public Scanner input = new Scanner(System.in);
+    public double saldo;
 
     public static void main(String[] args) {
         KohiSop app = new KohiSop();
@@ -41,9 +42,13 @@ public class KohiSop {
                 Handler.handleClearConsole();
             } else if (command.toLowerCase().equals("checkout")) {
                 Handler.handleCheckout(app);
+            } else if (command.toLowerCase().equals("topup")) {
+                Handler.handleTopup(app);
+            } else if (command.toLowerCase().equals("saldo")) {
+                Handler.handleDisplaySaldo(app);
             } else {
-                System.out.printf("Perintah '%s' tidak ditemukan :(\n", command);
-                System.out.println("Ketik 'help' untuk bantuan ^^!");
+                System.out.printf("Perintah '%s' tidak ditemukan.\n", command);
+                System.out.println("Ketik 'help' untuk bantuan.");
             }
 
         }
