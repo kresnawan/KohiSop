@@ -28,18 +28,18 @@ public class Menu implements Displayable {
 
     @Override
     public void display() {
-        System.out.printf("-------------------------------------------------\n");
-        System.out.printf("%-6s %-35s %s\n", "Kode", "Minuman", "Harga");
-        System.out.printf("-------------------------------------------------\n");
+        System.out.printf("--------------------------------------------------------\n");
+        System.out.printf("%-6s %-35s %s\n", "Kode", "Minuman", "Harga (IDR)");
+        System.out.printf("--------------------------------------------------------\n");
         for (MenuItem menu : Menu.menu) {
             if (menu.tipe == MenuType.Minuman) {
                 System.out.printf("%-6s %-35s %.0f\n", menu.kode, menu.nama, menu.harga);
             }
         }
 
-        System.out.printf("\n-------------------------------------------------\n");
-        System.out.printf("%-6s %-35s %s\n", "Kode", "Makanan", "Harga");
-        System.out.printf("-------------------------------------------------\n");
+        System.out.printf("--------------------------------------------------------\n");
+        System.out.printf("%-6s %-35s %s\n", "Kode", "Makanan", "Harga (IDR)");
+        System.out.printf("--------------------------------------------------------\n");
 
         for (MenuItem menu : Menu.menu) {
             if (menu.tipe == MenuType.Makanan) {

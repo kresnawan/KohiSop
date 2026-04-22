@@ -13,6 +13,10 @@ public class Cart implements Displayable {
     public Cart() {
     }
 
+    public void empty() {
+        this.items.clear();
+    }
+
     @Override
     public void display() {
         System.out.printf("-------------------------------------------------\n");
