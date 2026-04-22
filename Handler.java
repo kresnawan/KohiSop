@@ -8,6 +8,9 @@ import payment.Tunai;
 import tax.Pajak;
 import tax.PajakMakanan;
 import tax.PajakMinuman;
+import currency.CurrencyConverter;
+import currency.CurrencyType;
+import cart.Cart;
 import cart.CartItem;
 import colors.Colors;
 
@@ -158,77 +161,52 @@ public class Handler {
                 break;
             }
 
-            String str = String.format("%-72s", "");
-            System.out.printf(" %-68s \n", str.replace(" ", "-"));
-
-            // System.out.printf("| %-68s | \n", "");
-            // System.out.printf("| %-68s | \n", "KohiSop");
-            System.out.printf("|  %-48s %19s  | \n", "Tagihan Anda", ch.nama + " | IDR");
-
-            System.out.printf(" %-68s \n", str.replace(" ", "-"));
-
-            System.out.printf("|  %-68s  | \n", "");
-            System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "Kode", "Nama", "Harga", "Jumlah", "Total");
-            System.out.printf("|  %-68s  | \n", "");
-
-            double totalHarga = 0;
-            double totalPajak = 0;
-
-            for (CartItem c : app.cart.items) {
-
-                double subtotal = c.menu.harga * c.amount;
-                totalHarga += subtotal;
-
-                Pajak pajak;
-
-                if (c.menu.tipe == MenuType.Minuman) {
-                    pajak = new PajakMinuman();
-                } else {
-                    pajak = new PajakMakanan();
-                }
-
-                double pajakItem = pajak.hitung(c.menu, c.amount);
-                totalPajak += pajakItem;
-
-                System.out.printf("|  %-4s  %-35s  %7.2f  %7d  %7.2f  | \n",
-                        c.menu.kode, c.menu.nama, c.menu.harga, c.amount, subtotal);
-
-                System.out.printf("|  %-4s  %-35s  %7s  %7s  %7.2f  | \n",
-                        "", "Pajak", "", "", pajakItem);
-
-                System.out.printf("|  %-68s  | \n", "");
-            }
-
-            double totalDiskon = ch.hitungDiskon(totalHarga + totalPajak);
-            double totalBiayaAdmin = ch.getBiayaAdmin();
-            double grandTotal = (totalHarga + totalPajak) - totalDiskon + totalBiayaAdmin;
-
-            System.out.printf("|  %-68s  | \n", "");
-            System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Total (Tanpa Pajak)", totalHarga);
-            System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Total Pajak", totalPajak);
-            System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Diskon", totalDiskon);
-            System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Biaya Admin", totalBiayaAdmin);
-            System.out.printf("|  %-68s  | \n", "");
-            System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "GRAND TOTAL", grandTotal);
-            System.out.printf("|  %-68s  | \n", "");
-            System.out.printf(" %-68s \n", str.replace(" ", "-"));
-
-            // System.out.printf("| %-68s | \n", "");
-            // System.out.printf("| %-68s | \n", "Terima kasih dan silakan datang kembali
-            // ^^!");
-            // System.out.printf(" %-68s \n", str.replace(" ", "-"));
+            double grandTotalIDR = printTagihan(app.cart, ch, CurrencyType.IDR);
 
             if (ch instanceof Qris || ch instanceof EMoney) {
-                if (!ch.cekSaldo(grandTotal, app.saldo)) {
+                if (!ch.cekSaldo(grandTotalIDR, app.saldo)) {
                     System.out.printf(Colors.BOLD + Colors.RED
                             + "Checkout gagal, saldo anda tidak mencukupi untuk menggunakan channel pembayaran %s.\n"
                             + Colors.RESET, ch.nama);
                     System.out.println("Ketik 'topup <jumlah>' untuk menambahkan saldo.");
                     return;
                 }
-
-                app.saldo -= grandTotal;
             }
+
+            CurrencyType chosen;
+
+            while (true) {
+                System.out.println();
+                System.out.printf("Masukkan mata uang yang akan digunakan untuk pembayaran: ");
+                String cur = app.input.next();
+
+                switch (cur.toUpperCase()) {
+                    case "":
+                        chosen = CurrencyType.IDR;
+                        break;
+                    case "USD":
+                        chosen = CurrencyType.USD;
+                        break;
+                    case "JPY":
+                        chosen = CurrencyType.JPY;
+                        break;
+                    case "MYR":
+                        chosen = CurrencyType.MYR;
+                        break;
+                    case "EUR":
+                        chosen = CurrencyType.EUR;
+                        break;
+                    default:
+                        System.out.println("Input anda tidak valid.");
+                        continue;
+                }
+                break;
+            }
+
+            printNota(app.cart, ch, chosen);
+            app.saldo -= grandTotalIDR;
+            app.cart.empty();
+
         }
     }
 
@@ -250,6 +228,129 @@ public class Handler {
         return chs;
     }
 
+    private static double printTagihan(Cart c, ChannelPembayaran cp, CurrencyType type) {
+        String str = String.format("%-72s", "");
+        System.out.printf(" %-68s \n", str.replace(" ", "-"));
+
+        // System.out.printf("| %-68s | \n", "");
+        // System.out.printf("| %-68s | \n", "KohiSop");
+        System.out.printf("|  %-48s %19s  | \n", "Tagihan Anda", cp.nama + " | " + CurrencyConverter.getCode(type));
+
+        System.out.printf(" %-68s \n", str.replace(" ", "-"));
+
+        System.out.printf("|  %-68s  | \n", "");
+        System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "Kode", "Nama", "Harga", "Jumlah", "Total");
+        System.out.printf("|  %-68s  | \n", "");
+
+        double totalHarga = 0;
+        double totalPajak = 0;
+
+        for (CartItem item : c.items) {
+
+            double subtotal = CurrencyConverter.convert(item.menu.harga * item.amount, type);
+            totalHarga += subtotal;
+
+            Pajak pajak;
+
+            if (item.menu.tipe == MenuType.Minuman) {
+                pajak = new PajakMinuman();
+            } else {
+                pajak = new PajakMakanan();
+            }
+
+            double pajakItem = CurrencyConverter.convert(pajak.hitung(item.menu, item.amount), type);
+            totalPajak += pajakItem;
+
+            System.out.printf("|  %-4s  %-35s  %7.2f  %7d  %7.2f  | \n",
+                    item.menu.kode, item.menu.nama, CurrencyConverter.convert(item.menu.harga, type), item.amount,
+                    subtotal);
+
+            System.out.printf("|  %-4s  %-35s  %7s  %7s  %7.2f  | \n",
+                    "", "Pajak", "", "", pajakItem);
+
+            System.out.printf("|  %-68s  | \n", "");
+        }
+
+        double totalDiskon = cp.hitungDiskon(totalHarga + totalPajak);
+        double totalBiayaAdmin = cp.getBiayaAdmin();
+        double grandTotal = (totalHarga + totalPajak) - totalDiskon + totalBiayaAdmin;
+
+        System.out.printf("|  %-68s  | \n", "");
+        System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Total (Tanpa Pajak)", totalHarga);
+        System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Total Pajak", totalPajak);
+        System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Diskon", totalDiskon);
+        System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Biaya Admin", totalBiayaAdmin);
+        System.out.printf("|  %-68s  | \n", "");
+        System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "GRAND TOTAL", grandTotal);
+        System.out.printf("|  %-68s  | \n", "");
+        System.out.printf(" %-68s \n", str.replace(" ", "-"));
+
+        return grandTotal;
+    }
+
+    private static double printNota(Cart c, ChannelPembayaran cp, CurrencyType type) {
+        String str = String.format("%-72s", "");
+        System.out.printf(" %-68s \n", str.replace(" ", "-"));
+
+        // System.out.printf("| %-68s | \n", "");
+        // System.out.printf("| %-68s | \n", "KohiSop");
+        System.out.printf("|  %-48s %19s  | \n", "KohiSop", cp.nama + " | " + CurrencyConverter.getCode(type));
+
+        System.out.printf(" %-68s \n", str.replace(" ", "-"));
+
+        System.out.printf("|  %-68s  | \n", "");
+        System.out.printf("|  %-4s  %-35s  %7s  %7s  %7s  | \n", "Kode", "Nama", "Harga", "Jumlah", "Total");
+        System.out.printf("|  %-68s  | \n", "");
+
+        double totalHarga = 0;
+        double totalPajak = 0;
+
+        for (CartItem item : c.items) {
+
+            double subtotal = CurrencyConverter.convert(item.menu.harga * item.amount, type);
+            totalHarga += subtotal;
+
+            Pajak pajak;
+
+            if (item.menu.tipe == MenuType.Minuman) {
+                pajak = new PajakMinuman();
+            } else {
+                pajak = new PajakMakanan();
+            }
+
+            double pajakItem = CurrencyConverter.convert(pajak.hitung(item.menu, item.amount), type);
+            totalPajak += pajakItem;
+
+            System.out.printf("|  %-4s  %-35s  %7.2f  %7d  %7.2f  | \n",
+                    item.menu.kode, item.menu.nama, CurrencyConverter.convert(item.menu.harga, type), item.amount,
+                    subtotal);
+
+            System.out.printf("|  %-4s  %-35s  %7s  %7s  %7.2f  | \n",
+                    "", "Pajak", "", "", pajakItem);
+
+            System.out.printf("|  %-68s  | \n", "");
+        }
+
+        double totalDiskon = cp.hitungDiskon(totalHarga + totalPajak);
+        double totalBiayaAdmin = cp.getBiayaAdmin();
+        double grandTotal = (totalHarga + totalPajak) - totalDiskon + totalBiayaAdmin;
+
+        System.out.printf("|  %-68s  | \n", "");
+        System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Total (Tanpa Pajak)", totalHarga);
+        System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Total Pajak", totalPajak);
+        System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Diskon", totalDiskon);
+        System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Biaya Admin", totalBiayaAdmin);
+        System.out.printf("|  %-68s  | \n", "");
+        System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "GRAND TOTAL", grandTotal);
+        System.out.printf("|  %-68s  | \n", "");
+        System.out.printf(" %-68s \n", str.replace(" ", "-"));
+
+        System.out.printf("|  %-68s  | \n", "Terima kasih dan silakan datang kembali^^!");
+        System.out.printf(" %-68s \n", str.replace(" ", "-"));
+
+        return grandTotal;
+    }
+
     public static void handleTopup(KohiSop app) {
         try {
             String jumlahAsString = app.input.next();
@@ -265,6 +366,6 @@ public class Handler {
     }
 
     public static void handleDisplaySaldo(KohiSop app) {
-        System.out.println(app.saldo);
+        System.out.println("IDR " + app.saldo);
     }
 }
