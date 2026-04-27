@@ -4,9 +4,9 @@ import interfaces.Displayable;
 public class Help implements Displayable {
     HelpItem[] items = {
         new HelpItem("help", "Menampilkan daftar perintah"),
-        new HelpItem("cart", "Menampilkan keranjang"),
+        new HelpItem("cart", "Menampilkan isi keranjang anda"),
         new HelpItem("menu", "Menampilkan menu yang tersedia"),
-        new HelpItem("clear", "Membersihkan konsol (hanya pemanis)"),
+        new HelpItem("clear", "Membersihkan konsol"),
         new HelpItem("checkout", "Membuat pesanan"),
         new HelpItem("saldo", "Menampilkan saldo terkini"),
         new HelpItem("topup <jumlah>", "Topup saldo"),

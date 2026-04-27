@@ -19,6 +19,7 @@ public class KohiSop {
         app.menu.display();
 
         System.out.println("\nKetik 'help' untuk bantuan ^^!");
+        System.out.println("Ketik 'add <kode>' untuk menambah menu ke keranjang");
 
         while (true) {
             
