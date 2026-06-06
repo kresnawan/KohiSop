@@ -10,6 +10,11 @@ import tax.PajakMakanan;
 import tax.PajakMinuman;
 import currency.CurrencyConverter;
 import currency.CurrencyType;
+import membership.MemberData;
+import membership.Membership;
+
+import java.util.Iterator;
+
 import cart.Cart;
 import cart.CartItem;
 import colors.Colors;
@@ -138,6 +143,10 @@ public class Handler {
 			System.out.println("Keranjang kamu masih kosong :_|");
 		} else {
 			app.input.nextLine();
+
+			System.out.printf("Pesanan ini atas nama siapa? ");
+			String nama = app.input.nextLine();
+
 			ChannelPembayaran ch;
 			ChannelPembayaran[] chs = Handler.displayChannelPembayaran();
 			System.out.println();
@@ -164,7 +173,7 @@ public class Handler {
 				break;
 			}
 
-			double grandTotalIDR = printTagihan(app.cart, ch, CurrencyType.IDR);
+			double grandTotalIDR = printTagihan(app.cart, ch, CurrencyType.IDR, app.membership, nama);
 
 			if (ch instanceof Qris || ch instanceof EMoney) {
 				if (!ch.cekSaldo(grandTotalIDR, app.saldo)) {
@@ -194,9 +203,38 @@ public class Handler {
 				break;
 			}
 
-			printNota(app.cart, ch, ctChosen);
+			boolean usePoint = false;
+			int currentPoint = app.membership.getPoin(nama);
+
+			if (ctChosen == CurrencyType.IDR && currentPoint > 0) {
+				System.out.printf(
+						"Karena anda memilih rupiah sebagai mata uang, apakah anda ingin menggunakan poin anda untuk memotong pembayaran?\nAnda dapat menghemat hingga Rp %d [Y/n]: ", currentPoint);
+				app.input.nextLine();
+				String yesNo = app.input.nextLine();
+
+				if (yesNo.toLowerCase().equals("n")) {
+					usePoint = false;
+				} else if (yesNo.toLowerCase().equals("y") || yesNo.equals("")) {
+					usePoint = true;
+				} else {
+					System.out.println("Input anda tidak valid");
+					return;
+				}
+			}
+
+			printNota(app.cart, ch, ctChosen, app.membership, nama, usePoint);
 			app.saldo -= grandTotalIDR;
 			app.cart.empty();
+
+			try {
+				app.membership.tambahPoin(nama);
+			} catch (Exception err1) {
+				try {
+					app.membership.tambah(new MemberData(nama));
+				} catch (Exception err2) {
+					System.out.println(err2.getMessage());
+				}
+			}
 
 		}
 	}
@@ -239,7 +277,7 @@ public class Handler {
 		return mu;
 	}
 
-	private static double printTagihan(Cart c, ChannelPembayaran cp, CurrencyType type) {
+	private static double printTagihan(Cart c, ChannelPembayaran cp, CurrencyType type, Membership mem, String nama) {
 		String str = String.format("%-72s", "");
 		System.out.printf(" %-68s \n", str.replace(" ", "-"));
 
@@ -269,7 +307,13 @@ public class Handler {
 				pajak = new PajakMakanan();
 			}
 
-			double pajakItem = CurrencyConverter.convert(pajak.hitung(item.menu, item.amount), type);
+			double pajakItem;
+			if (mem.kodeMengandungHurufA(nama)) {
+				pajakItem = 0;
+			} else {
+				pajakItem = CurrencyConverter.convert(pajak.hitung(item.menu, item.amount), type);
+			}
+
 			totalPajak += pajakItem;
 
 			System.out.printf("|  %-4s  %-35s  %7.2f  %7d  %7.2f  | \n",
@@ -299,12 +343,10 @@ public class Handler {
 		return grandTotal;
 	}
 
-	private static double printNota(Cart c, ChannelPembayaran cp, CurrencyType type) {
+	private static double printNota(Cart c, ChannelPembayaran cp, CurrencyType type, Membership mem, String nama,
+			boolean pakaiPoin) {
 		String str = String.format("%-72s", "");
 		System.out.printf(" %-68s \n", str.replace(" ", "-"));
-
-		// System.out.printf("| %-68s | \n", "");
-		// System.out.printf("| %-68s | \n", "KohiSop");
 		System.out.printf("|  %-48s %19s  | \n", "KohiSop", cp.nama + " | " + CurrencyConverter.getCode(type));
 
 		System.out.printf(" %-68s \n", str.replace(" ", "-"));
@@ -329,7 +371,12 @@ public class Handler {
 				pajak = new PajakMakanan();
 			}
 
-			double pajakItem = CurrencyConverter.convert(pajak.hitung(item.menu, item.amount), type);
+			double pajakItem;
+			if (mem.kodeMengandungHurufA(nama)) {
+				pajakItem = 0;
+			} else {
+				pajakItem = CurrencyConverter.convert(pajak.hitung(item.menu, item.amount), type);
+			}
 			totalPajak += pajakItem;
 
 			System.out.printf("|  %-4s  %-35s  %7.2f  %7d  %7.2f  | \n",
@@ -342,14 +389,30 @@ public class Handler {
 			System.out.printf("|  %-68s  | \n", "");
 		}
 
+		double totalPotonganPoin = 0;
+
 		double totalDiskon = cp.hitungDiskon(totalHarga + totalPajak);
 		double totalBiayaAdmin = cp.getBiayaAdmin();
-		double grandTotal = (totalHarga + totalPajak) - totalDiskon + totalBiayaAdmin;
+		if (pakaiPoin)
+			totalPotonganPoin = Math.min((mem.getPoin(nama) * 2),
+					(totalHarga + totalPajak + totalBiayaAdmin - totalDiskon));
+		double grandTotal = (totalHarga + totalPajak + totalBiayaAdmin) - (totalDiskon + totalPotonganPoin);
 
 		System.out.printf("|  %-68s  | \n", "");
 		System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Total (Tanpa Pajak)", totalHarga);
 		System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Total Pajak", totalPajak);
 		System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Diskon", totalDiskon);
+		if (pakaiPoin) {
+			System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Potongan Poin", totalPotonganPoin);
+			int totalKurangiPoin = (int) totalPotonganPoin / 2;
+			try {
+				mem.kurangiPoin(nama, totalKurangiPoin);
+			} catch (Exception e) {
+				System.out.println("Terjadi error");
+				System.exit(1);
+			}
+		}
+
 		System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "Biaya Admin", totalBiayaAdmin);
 		System.out.printf("|  %-68s  | \n", "");
 		System.out.printf("|  %-4s  %-53s  %7.2f  | \n", "", "GRAND TOTAL", grandTotal);
@@ -378,5 +441,21 @@ public class Handler {
 
 	public static void handleDisplaySaldo(KohiSop app) {
 		System.out.println("IDR " + app.saldo);
+	}
+
+	public static void handleDisplayMembership(KohiSop app) {
+		Iterator<MemberData> iList = app.membership.list.iterator();
+		int index = 1;
+
+		while (iList.hasNext()) {
+			MemberData item = iList.next();
+			System.out.printf("%d - %s - %s - %d - %d\n", index, item.kode, item.nama, item.jumlahPoin,
+					item.jumlahTransaksi);
+
+			index += 1;
+		}
+
+		if (index == 1)
+			System.out.println("Belum ada membership");
 	}
 }

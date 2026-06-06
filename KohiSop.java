@@ -3,12 +3,15 @@ import java.util.Scanner;
 import cart.Cart;
 import colors.Colors;
 import help.Help;
+import membership.MemberData;
+import membership.Membership;
 import menu.Menu;
 
 public class KohiSop {
     public Menu menu = new Menu();
     public Cart cart = new Cart();
     public Help help = new Help();
+    public Membership membership = new Membership();
     public Scanner input = new Scanner(System.in);
     public double saldo;
 
@@ -47,6 +50,8 @@ public class KohiSop {
                 Handler.handleTopup(app);
             } else if (command.toLowerCase().equals("saldo")) {
                 Handler.handleDisplaySaldo(app);
+            } else if (command.toLowerCase().equals("member")) {
+                Handler.handleDisplayMembership(app);
             } else {
                 System.out.printf("Perintah '%s' tidak ditemukan.\n", command);
                 System.out.println("Ketik 'help' untuk bantuan.");
