@@ -3,6 +3,8 @@ import cart.CartItem;
 import colors.Colors;
 import currency.CurrencyConverter;
 import currency.CurrencyType;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import membership.MemberData;
 import membership.Membership;
@@ -19,7 +21,6 @@ import tax.PajakMinuman;
 
 public class Handler {
     public static kitchen.AntreanDapur dapurKohi = new kitchen.AntreanDapur();
-
 
 	public static void handleExit(KohiSop app) {
 		System.out.println("Terima kasih telah menggunakan KohiSop!\n");
@@ -209,7 +210,8 @@ public class Handler {
 
 			if (ctChosen == CurrencyType.IDR && currentPoint > 0) {
 				System.out.printf(
-						"Karena anda memilih rupiah sebagai mata uang, apakah anda ingin menggunakan poin anda untuk memotong pembayaran?\nAnda dapat menghemat hingga Rp %d [Y/n]: ", currentPoint);
+						"Karena anda memilih rupiah sebagai mata uang, apakah anda ingin menggunakan poin anda untuk memotong pembayaran?\nAnda dapat menghemat hingga Rp %d [Y/n]: ",
+						currentPoint);
 				app.input.nextLine();
 				String yesNo = app.input.nextLine();
 
@@ -458,19 +460,29 @@ public class Handler {
 	}
 
 	public static void handleDisplayMembership(KohiSop app) {
-		Iterator<MemberData> iList = app.membership.list.iterator();
-		int index = 1;
+		ArrayList<MemberData> list = app.membership.list;
 
+		if (list.size() == 0) {
+			System.out.println("Belum ada data membership");
+			return;
+		}
+
+		Iterator<MemberData> iList = list.iterator();
+		int index = 1;
+		String garis = "--------------------------------------------------------------------------------";
+
+		System.out.println(garis);
+		System.out.printf("| %-4s | %-10s | %-20s | %-10s | %-20s |\n", "No", "Kode", "Nama", "Poin", "Jumlah Transaksi");
+		System.out.println(garis);
 		while (iList.hasNext()) {
 			MemberData item = iList.next();
-			System.out.printf("%d - %s - %s - %d - %d\n", index, item.kode, item.nama, item.jumlahPoin,
+			
+			System.out.printf("| %-4d | %-10s | %-20s | %-10d | %-20d |\n", index, item.kode, item.nama, item.jumlahPoin,
 					item.jumlahTransaksi);
 
 			index += 1;
 		}
-
-		if (index == 1)
-			System.out.println("Belum ada membership");
+		System.out.println(garis);
 	}
 
 	public static void handleDapur(KohiSop app) {

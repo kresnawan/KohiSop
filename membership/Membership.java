@@ -20,7 +20,6 @@ public class Membership {
         MemberData chosen = null;
 
         int givenPoint = 1;
-        int index = 0;
 
         while (iList.hasNext()) {
             MemberData item = iList.next();
@@ -29,22 +28,20 @@ public class Membership {
                 chosen = item;
                 break;
             }
-
-            index += 1;
         }
 
         if (chosen == null)
             throw new Exception("Chosen bernilai null");
-        MemberData dataToBeChanged = this.list.get(index);
-        dataToBeChanged.jumlahTransaksi += 1;
 
-        if (dataToBeChanged.jumlahTransaksi % 3 == 0) {
+        if (chosen.jumlahTransaksi > 0 && chosen.jumlahTransaksi % 10 == 0) {
             if (chosen.kode.toLowerCase().contains("a")) {
                 givenPoint *= 2;
             }
 
-            dataToBeChanged.jumlahPoin += givenPoint;
+            chosen.jumlahPoin += givenPoint;
         }
+
+        chosen.jumlahTransaksi += 1;
     }
 
     public void kurangiPoin(String nama, int jumlahPoin) throws Exception {
@@ -55,7 +52,7 @@ public class Membership {
         while (iList.hasNext()) {
             MemberData item = iList.next();
 
-            if (item.nama.toLowerCase().equals(nama.toLowerCase())) {
+            if (item.nama.equalsIgnoreCase(nama)) {
                 chosen = item;
                 break;
             }
@@ -67,8 +64,9 @@ public class Membership {
             throw new Exception("Chosen bernilai null");
 
         MemberData dataToBeChanged = this.list.get(index);
-        
-        if (dataToBeChanged.jumlahPoin < jumlahPoin) throw new Exception();
+
+        if (dataToBeChanged.jumlahPoin < jumlahPoin)
+            throw new Exception();
         dataToBeChanged.jumlahPoin -= jumlahPoin;
     }
 
@@ -77,7 +75,7 @@ public class Membership {
 
         while (iter.hasNext()) {
             MemberData item = iter.next();
-            if (item.nama.toLowerCase().equals(nama.toLowerCase())) {
+            if (item.nama.equalsIgnoreCase(nama)) {
                 return item.jumlahPoin;
             }
         }
@@ -91,8 +89,7 @@ public class Membership {
         while (iter.hasNext()) {
             MemberData item = iter.next();
             if (item.nama.toLowerCase().equals(nama.toLowerCase())) {
-                boolean res = item.kode.contains("A") ? true : false;
-                return res;
+                return item.kode.toLowerCase().contains("a");
             }
         }
 
