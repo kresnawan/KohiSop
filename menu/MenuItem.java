@@ -12,4 +12,8 @@ public class MenuItem {
         this.harga = harga;
         this.tipe = tipe;
     }
+    @Override
+    public String toString() {
+        return this.nama;
+    }
 }

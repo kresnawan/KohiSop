@@ -9,6 +9,8 @@ public class Help implements Displayable {
         new HelpItem("clear", "Membersihkan konsol"),
         new HelpItem("checkout", "Membuat pesanan"),
         new HelpItem("saldo", "Menampilkan saldo terkini"),
+        new HelpItem("dapur", "Menampilkan antrian dapur & bar"),
+        new HelpItem("member", "Menampilkan list membership, poin, dan jumlah transaksi"),
         new HelpItem("topup <jumlah>", "Topup saldo"),
         new HelpItem("add <kode>", "Menambahkan menu kedalam keranjang"),
         new HelpItem("remove <kode>", "Mengurangi menu dari keranjang"),

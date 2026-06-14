@@ -1,3 +1,11 @@
+import cart.Cart;
+import cart.CartItem;
+import colors.Colors;
+import currency.CurrencyConverter;
+import currency.CurrencyType;
+import java.util.Iterator;
+import membership.MemberData;
+import membership.Membership;
 import menu.Menu;
 import menu.MenuItem;
 import menu.MenuType;
@@ -8,18 +16,11 @@ import payment.Tunai;
 import tax.Pajak;
 import tax.PajakMakanan;
 import tax.PajakMinuman;
-import currency.CurrencyConverter;
-import currency.CurrencyType;
-import membership.MemberData;
-import membership.Membership;
-
-import java.util.Iterator;
-
-import cart.Cart;
-import cart.CartItem;
-import colors.Colors;
 
 public class Handler {
+    public static kitchen.AntreanDapur dapurKohi = new kitchen.AntreanDapur();
+
+
 	public static void handleExit(KohiSop app) {
 		System.out.println("Terima kasih telah menggunakan KohiSop!\n");
 		app.input.close();
@@ -224,6 +225,19 @@ public class Handler {
 
 			printNota(app.cart, ch, ctChosen, app.membership, nama, usePoint);
 			app.saldo -= grandTotalIDR;
+
+            System.out.println("\n--> Meneruskan pesanan ke monitor dapur...");
+            for (CartItem itemBelanja : app.cart.items) {
+                for (int porsi = 0; porsi < itemBelanja.amount; porsi++) {
+                    String kategoriStr = "Makanan";
+                    if (itemBelanja.menu.tipe == MenuType.Minuman) {
+                        kategoriStr = "Minuman";
+                    }
+                    dapurKohi.masukanPesananBaru(itemBelanja.menu, kategoriStr);
+                }
+            }
+            System.out.println("--> Pesanan berhasil masuk ke antrean dapur & barista!");
+        
 			app.cart.empty();
 
 			try {
@@ -457,5 +471,26 @@ public class Handler {
 
 		if (index == 1)
 			System.out.println("Belum ada membership");
+	}
+
+	public static void handleDapur(KohiSop app) {
+        System.out.println("=================================");
+        System.out.println("     MONITOR UTAMA TIM DAPUR     ");
+        System.out.println("=================================");
+        dapurKohi.cetakAntreanDapur();
+        
+        System.out.println("\nPILIHAN AKSI TIM DAPUR:");
+        System.out.println("1. Selesaikan Makanan Terdepan");
+        System.out.println("2. Selesaikan Minuman Terdepan");
+        System.out.println("3. Kembali ke Menu Utama");
+        
+		System.out.print("\nPilih aksi (1-3): ");
+        String aksi = app.input.next();
+        
+		if (aksi.equals("1")) {
+            dapurKohi.makananSelesai();
+        } else if (aksi.equals("2")) {
+            dapurKohi.minumanSelesai();
+        }
 	}
 }

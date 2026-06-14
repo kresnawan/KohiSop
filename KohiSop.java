@@ -1,9 +1,7 @@
-import java.util.Scanner;
-
 import cart.Cart;
 import colors.Colors;
 import help.Help;
-import membership.MemberData;
+import java.util.Scanner;
 import membership.Membership;
 import menu.Menu;
 
@@ -52,6 +50,8 @@ public class KohiSop {
                 Handler.handleDisplaySaldo(app);
             } else if (command.toLowerCase().equals("member")) {
                 Handler.handleDisplayMembership(app);
+            } else if (command.toLowerCase().equals("dapur")) {
+                Handler.handleDapur(app);
             } else {
                 System.out.printf("Perintah '%s' tidak ditemukan.\n", command);
                 System.out.println("Ketik 'help' untuk bantuan.");
